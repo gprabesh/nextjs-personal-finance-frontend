@@ -19,13 +19,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -84,39 +77,40 @@ export default function DashboardLayout({
           <div className="flex-1">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
               <Link
-                href="#"
+                href="/dashboard"
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
               >
                 <Home className="h-4 w-4" />
                 Dashboard
               </Link>
-              <Collapsible>
-                <CollapsibleTrigger className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary">
-                  <Package className="h-4 w-4" /> Wallets
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  {accounts?.data?.accounts?.map((element: Account) => (
-                    <Link
-                      key={element.id}
-                      href="/dashboard/transactions"
-                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                    >
-                      <WalletCardsIcon className="h-4 w-4" />
-                      {element.name +
-                        " " +
-                        element.current_balance +
-                        " " +
-                        element.current_balance_type}
-                    </Link>
-                  ))}
-                </CollapsibleContent>
-              </Collapsible>
+              <Link
+                href="/dashboard/wallets"
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+              >
+                <Wallet2Icon className="h-4 w-4" />
+                Wallets
+              </Link>
+
               <Link
                 href="/dashboard/transactions"
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
               >
                 <ShoppingCart className="h-4 w-4" />
-                Transactions
+                Incomes
+              </Link>
+              <Link
+                href="/dashboard/transactions"
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+              >
+                <ShoppingCart className="h-4 w-4" />
+                Expenses
+              </Link>
+              <Link
+                href="/dashboard/transactions"
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+              >
+                <ShoppingCart className="h-4 w-4" />
+                Transfers
               </Link>
               <Link
                 href="#"
@@ -253,7 +247,7 @@ export default function DashboardLayout({
           </DropdownMenu>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-          <Header></Header>
+          <Header title={'Hello'}></Header>
           <div
             className="flex flex-1 items-center justify-center rounded-lg border border-slate-500 shadow-sm"
             x-chunk="dashboard-02-chunk-1"

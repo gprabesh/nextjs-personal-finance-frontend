@@ -1,7 +1,7 @@
-export default function Header() {
+export default function Header({ title }: { title: string | null }) {
   return (
     <div className="flex items-center">
-      <h1 className="text-lg font-semibold md:text-2xl">Inventory</h1>
+      <h1 className="text-lg font-semibold md:text-2xl">{title}</h1>
     </div>
   );
 }

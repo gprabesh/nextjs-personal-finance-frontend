@@ -39,14 +39,14 @@ export default function LoginForm() {
       .post("/api/auth/login", data)
       .then((response: AxiosResponse) => {
         const loginResponse: LoginResponse = response.data;
-        if (loginResponse.data.user) {
+        if (loginResponse.user) {
           sessionStorage.setItem(
             "currentUser",
-            JSON.stringify(loginResponse.data.user)
+            JSON.stringify(loginResponse.user)
           );
           sessionStorage.setItem(
             "accessToken",
-            JSON.stringify(loginResponse.data.token)
+            JSON.stringify(loginResponse.token)
           );
         }
       })

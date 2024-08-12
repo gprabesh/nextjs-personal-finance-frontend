@@ -1,11 +1,7 @@
 export interface LoginResponse {
-  message: string;
-  data: Data;
-}
-
-interface Data {
-  user: User;
-  token: string;
+  user: User
+  token: string
+  message: string
 }
 
 interface User {

@@ -51,14 +51,14 @@ export default function LoginForm() {
       .post("/api/auth/register", data)
       .then((response: AxiosResponse) => {
         const registerResponse: LoginResponse = response.data;
-        if (registerResponse.data.user) {
+        if (registerResponse.user) {
           sessionStorage.setItem(
             "currentUser",
-            JSON.stringify(registerResponse.data.user)
+            JSON.stringify(registerResponse.user)
           );
           sessionStorage.setItem(
             "accessToken",
-            JSON.stringify(registerResponse.data.token)
+            JSON.stringify(registerResponse.token)
           );
         }
       })

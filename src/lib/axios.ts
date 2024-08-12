@@ -10,17 +10,16 @@ http.interceptors.response.use(
     if (response.status == 401) {
       sessionStorage.removeItem("currentUser");
       sessionStorage.removeItem("accessToken");
-      redirect("/auth/login");
+      window.location.href = "/auth/login";
     }
     return response;
   },
   (error: AxiosError) => {
     const { data, status, config } = error.response!;
-    console.log(error.response!);
     if (status == 401) {
       sessionStorage.removeItem("currentUser");
       sessionStorage.removeItem("accessToken");
-      redirect("/auth/login");
+      window.location.href = "/auth/login";
     }
   }
 );
