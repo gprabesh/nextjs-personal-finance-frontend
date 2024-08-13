@@ -1,12 +1,7 @@
-export interface Accounts {
-  message: string;
-  data: Data;
-}
-
-export interface Data {
+export interface AccountsResponse {
   accounts: Account[];
+  message: string;
 }
-
 export interface Account {
   id: number;
   name: string;

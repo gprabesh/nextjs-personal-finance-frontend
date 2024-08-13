@@ -1,3 +1,4 @@
+import { Account } from "@/app/interfaces/accountsDto";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,7 +24,13 @@ const AccountSchema = z.object({
 
 type AccountSchemaType = z.infer<typeof AccountSchema>;
 
-export function AccountForm() {
+export function AccountForm({
+  isOpen = false,
+  account,
+}: {
+  isOpen: boolean;
+  account?: Account;
+}) {
   let {
     handleSubmit,
     register,
@@ -31,16 +38,23 @@ export function AccountForm() {
   } = useForm<AccountSchemaType>({ resolver: zodResolver(AccountSchema) });
 
   const onSubmit: SubmitHandler<AccountSchemaType> = (data) => {
-    Object.assign(data, { account_group_id: 3 });
-    http.post("/api/accounts", data).then((response: AxiosResponse) => {
-      console.log(response);
-    });
+    if (account) {
+      http
+        .patch("/api/accounts/" + account.id, data)
+        .then((response: AxiosResponse) => {
+          console.log(response);
+          isOpen = false;
+        });
+    } else {
+      Object.assign(data, { account_group_id: 3 });
+      http.post("/api/accounts", data).then((response: AxiosResponse) => {
+        console.log(response);
+        isOpen = false;
+      });
+    }
   };
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Edit Profile</Button>
-      </DialogTrigger>
+    <Dialog open={isOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
@@ -56,6 +70,7 @@ export function AccountForm() {
                 type="text"
                 className="col-span-3"
                 required
+                value={account?.name}
                 {...register("name")}
               />
               {errors.name && (
@@ -73,6 +88,11 @@ export function AccountForm() {
                 defaultValue="0"
                 className="col-span-3"
                 type="number"
+                value={
+                  account?.current_balance_type == "CR"
+                    ? 0 - account.current_balance
+                    : account?.current_balance
+                }
                 required
                 {...register("opening_balance", { valueAsNumber: true })}
               />
@@ -84,7 +104,7 @@ export function AccountForm() {
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Save</Button>
+            <Button type="submit">{account ? "Update" : "Save"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

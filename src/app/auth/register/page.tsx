@@ -16,8 +16,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import http from "@/lib/axios";
 import { AxiosError, AxiosResponse } from "axios";
-import { LoginResponse } from "../login/login";
 import { useRouter } from "next/navigation";
+import { LoginResponse } from "@/app/interfaces/authDto";
 
 const RegisterSchema = z
   .object({
@@ -62,7 +62,7 @@ export default function LoginForm() {
           );
         }
       })
-      .then(() => router.push("/dashboard"))
+      .then(() => router.push("/home"))
       .catch((error: AxiosError) => console.log(error));
   };
   return (

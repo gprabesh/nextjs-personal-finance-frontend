@@ -15,8 +15,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import http from "@/lib/axios";
 import { AxiosError, AxiosResponse } from "axios";
-import { LoginResponse } from "./login";
 import { useRouter } from "next/navigation";
+import { LoginResponse } from "@/app/interfaces/authDto";
 
 const LoginSchema = z.object({
   usernameOrEmail: z.string().min(3),
@@ -50,7 +50,7 @@ export default function LoginForm() {
           );
         }
       })
-      .then(() => router.push("/dashboard"))
+      .then(() => router.push("/home"))
       .catch((error: AxiosError) => console.log(error));
   };
 
