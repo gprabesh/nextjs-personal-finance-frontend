@@ -14,3 +14,18 @@ export interface Account {
   updated_at: string;
   status: number;
 }
+
+export interface AccountGroupsResponse {
+  accountGroups: AccountGroup[]
+  message: string
+}
+
+export interface AccountGroup {
+  id: number
+  name: string
+  code: string
+  created_at: string
+  updated_at: string
+  status: number
+}
+

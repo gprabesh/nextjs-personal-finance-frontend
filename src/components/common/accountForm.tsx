@@ -1,3 +1,4 @@
+import { useAccountGroups } from "@/app/hooks/swr";
 import { Account } from "@/app/interfaces/accountsDto";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import http from "@/lib/axios";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { DialogClose } from "@radix-ui/react-dialog";
 import { AxiosResponse } from "axios";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -25,11 +27,13 @@ const AccountSchema = z.object({
 type AccountSchemaType = z.infer<typeof AccountSchema>;
 
 export function AccountForm({
-  isOpen = false,
   account,
+  account_group_id,
+  onEmit
 }: {
-  isOpen: boolean;
   account?: Account;
+  account_group_id?: number;
+  onEmit: (isSuccess: boolean, shouldClose: boolean) => void;
 }) {
   let {
     handleSubmit,
@@ -37,24 +41,27 @@ export function AccountForm({
     formState: { errors },
   } = useForm<AccountSchemaType>({ resolver: zodResolver(AccountSchema) });
 
+  let { accountGroups, isLoading, isError } = useAccountGroups();
+
   const onSubmit: SubmitHandler<AccountSchemaType> = (data) => {
     if (account) {
+      Object.assign(data, { account_group_id: account.account_group_id })
       http
         .patch("/api/accounts/" + account.id, data)
         .then((response: AxiosResponse) => {
           console.log(response);
-          isOpen = false;
+          onEmit(true, true);
         });
     } else {
-      Object.assign(data, { account_group_id: 3 });
+      Object.assign(data, { account_group_id: account_group_id });
       http.post("/api/accounts", data).then((response: AxiosResponse) => {
         console.log(response);
-        isOpen = false;
+        onEmit(true, true);
       });
     }
   };
   return (
-    <Dialog open={isOpen}>
+    <Dialog open={true}>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
@@ -70,7 +77,7 @@ export function AccountForm({
                 type="text"
                 className="col-span-3"
                 required
-                value={account?.name}
+                defaultValue={account?.name}
                 {...register("name")}
               />
               {errors.name && (
@@ -85,10 +92,9 @@ export function AccountForm({
               </Label>
               <Input
                 id="opening_balance"
-                defaultValue="0"
                 className="col-span-3"
                 type="number"
-                value={
+                defaultValue={
                   account?.current_balance_type == "CR"
                     ? 0 - account.current_balance
                     : account?.current_balance
@@ -105,6 +111,7 @@ export function AccountForm({
           </div>
           <DialogFooter>
             <Button type="submit">{account ? "Update" : "Save"}</Button>
+            <Button onClick={() => onEmit(true, true)}>Close</Button>
           </DialogFooter>
         </form>
       </DialogContent>

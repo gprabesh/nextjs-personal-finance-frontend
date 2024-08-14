@@ -22,8 +22,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useTransactions } from "../hooks/swr";
+import { TransactionDetail } from "../interfaces/transactionsDto";
 
 export default function Dashboard() {
+
+  let { transactionDetails, isLoading, isError } = useTransactions();
   return (
     <>
       <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
@@ -32,7 +36,7 @@ export default function Dashboard() {
             <div className="grid gap-2">
               <CardTitle>Transactions</CardTitle>
               <CardDescription>
-                Recent transactions from your store.
+                Recent transactions by you.
               </CardDescription>
             </div>
             <Button asChild size="sm" className="ml-auto gap-1">
@@ -46,7 +50,7 @@ export default function Dashboard() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Customer</TableHead>
+                  <TableHead>Description</TableHead>
                   <TableHead className="hidden xl:table-column">Type</TableHead>
                   <TableHead className="hidden xl:table-column">
                     Status
@@ -56,11 +60,11 @@ export default function Dashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
+                {transactionDetails?.data.map((element: TransactionDetail) => <TableRow key={"transaction" + element.id}>
                   <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
+                    <div className="font-medium">{element.transaction.description}</div>
                     <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
+                      {element.account?.name}
                     </div>
                   </TableCell>
                   <TableCell className="hidden xl:table-column">Sale</TableCell>
@@ -72,84 +76,13 @@ export default function Dashboard() {
                   <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
                     2023-06-23
                   </TableCell>
-                  <TableCell className="text-right">$250.00</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>
-                    <div className="font-medium">Olivia Smith</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      olivia@example.com
+                  <TableCell className="text-right">
+                    <div className={"font-medium " + (element.credit > 0 ? 'text-red-500' : 'text-green-500')}>Rs. {element.transaction.amount.toLocaleString()}</div>
+                    <div className={"hidden text-sm text-foreground md:inline " + (element.account_balance_type == 'CR' ? 'text-red-500' : 'text-green-500')}>Rs.
+                      {element.account_balance.toLocaleString() + " " + element.account_balance_type}
                     </div>
                   </TableCell>
-                  <TableCell className="hidden xl:table-column">
-                    Refund
-                  </TableCell>
-                  <TableCell className="hidden xl:table-column">
-                    <Badge className="text-xs" variant="outline">
-                      Declined
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                    2023-06-24
-                  </TableCell>
-                  <TableCell className="text-right">$150.00</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>
-                    <div className="font-medium">Noah Williams</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      noah@example.com
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden xl:table-column">
-                    Subscription
-                  </TableCell>
-                  <TableCell className="hidden xl:table-column">
-                    <Badge className="text-xs" variant="outline">
-                      Approved
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                    2023-06-25
-                  </TableCell>
-                  <TableCell className="text-right">$350.00</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>
-                    <div className="font-medium">Emma Brown</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      emma@example.com
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden xl:table-column">Sale</TableCell>
-                  <TableCell className="hidden xl:table-column">
-                    <Badge className="text-xs" variant="outline">
-                      Approved
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                    2023-06-26
-                  </TableCell>
-                  <TableCell className="text-right">$450.00</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden xl:table-column">Sale</TableCell>
-                  <TableCell className="hidden xl:table-column">
-                    <Badge className="text-xs" variant="outline">
-                      Approved
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                    2023-06-27
-                  </TableCell>
-                  <TableCell className="text-right">$550.00</TableCell>
-                </TableRow>
+                </TableRow>)}
               </TableBody>
             </Table>
           </CardContent>
@@ -158,7 +91,7 @@ export default function Dashboard() {
           <CardHeader>
             <CardTitle>Recent Sales</CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-8">
+          {/* <CardContent className="grid gap-8">
             <div className="flex items-center gap-4">
               <Avatar className="hidden h-9 w-9 sm:flex">
                 <AvatarImage src="/avatars/01.png" alt="Avatar" />
@@ -226,7 +159,7 @@ export default function Dashboard() {
               </div>
               <div className="ml-auto font-medium">+$39.00</div>
             </div>
-          </CardContent>
+          </CardContent> */}
         </Card>
       </div>
     </>

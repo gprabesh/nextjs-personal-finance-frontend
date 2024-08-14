@@ -13,8 +13,18 @@ import { Account } from "@/app/interfaces/accountsDto";
 export default function Accounts() {
   let { accounts, isLoading, isError } = useAccount();
   let [dialogOpen, setDialogOpen] = useState(false);
+  let [accountGroupId, setAccountGroupId] = useState(3);
   let [editAccount, setEditAccount] = useState<Account>();
-  const setDialogOpt = () => {
+  const handleAccountFormEvent = (isSuccess: boolean, shouldClose: boolean) => {
+    if (shouldClose) {
+      setDialogOpen(false);
+      setEditAccount(undefined);
+    }
+  }
+  const setDialogOpt = (account_group_id?: number) => {
+    if (account_group_id) {
+      setAccountGroupId(accountGroupId);
+    }
     setDialogOpen(true);
   };
   const setEditAcc = (account: Account) => {
@@ -25,10 +35,16 @@ export default function Accounts() {
     <>
       <ActionBar>
         <div className="ml-auto flex items-center gap-2">
-          <Button size="sm" className="h-7 gap-1" onClick={setDialogOpt}>
+          <Button size="sm" className="h-7 gap-1" onClick={() => setDialogOpt()}>
             <PlusCircle className="h-3.5 w-3.5" />
             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-              Add Account
+              Account
+            </span>
+          </Button>
+          <Button size="sm" className="h-7 gap-1" onClick={() => setDialogOpt(3)}>
+            <PlusCircle className="h-3.5 w-3.5" />
+            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+              Wallet
             </span>
           </Button>
         </div>
@@ -65,7 +81,8 @@ export default function Accounts() {
           </Card>
         ))}
       </div>
-      <AccountForm isOpen={dialogOpen} account={editAccount}></AccountForm>
+      {dialogOpen && <AccountForm onEmit={handleAccountFormEvent} account_group_id={accountGroupId} account={editAccount}></AccountForm>}
+
     </>
   );
 }
