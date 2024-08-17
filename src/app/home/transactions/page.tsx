@@ -2,7 +2,7 @@
 import { IndianRupeeIcon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAccount } from "@/app/hooks/swr";
+import { useAccount, useTransactions } from "@/app/hooks/swr";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   DropdownMenu,
@@ -15,20 +15,20 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
 import { PlusCircle, ListFilter, File } from "lucide-react";
 import ActionBar from "@/components/common/actionBar";
+import { DataTable } from "./data-table";
+import { columns } from "./columns";
 
 export default function Accounts() {
   const { accounts, isLoading, isError } = useAccount();
+  const transactions = useTransactions();
   return (
     <>
       <ActionBar>
-        <Tabs defaultValue="active">
+        <Tabs defaultValue="all">
           <TabsList>
             <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="active">Active</TabsTrigger>
-            <TabsTrigger value="draft">Draft</TabsTrigger>
-            <TabsTrigger value="archived" className="hidden sm:flex">
-              Archived
-            </TabsTrigger>
+            <TabsTrigger value="income">Income</TabsTrigger>
+            <TabsTrigger value="expense">Expense</TabsTrigger>
           </TabsList>
         </Tabs>
         <div className="ml-auto flex items-center gap-2">
@@ -65,25 +65,9 @@ export default function Accounts() {
           </Button>
         </div>
       </ActionBar>
-      <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-5">
-        {accounts?.map((element) => (
-          <Card key={"account-" + element.id} x-chunk="dashboard-01-chunk-0">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {element.name}
-              </CardTitle>
-              <IndianRupeeIcon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">
-                {element.current_balance.toLocaleString() +
-                  " " +
-                  element.current_balance_type}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <div className="container mx-auto py-10">
+        {!transactions.isLoading && <DataTable columns={columns} data={transactions.transactionDetails?.data || []}></DataTable>}
+      </div >
     </>
   );
 }

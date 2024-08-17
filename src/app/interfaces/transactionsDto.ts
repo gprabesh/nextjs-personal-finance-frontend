@@ -23,6 +23,7 @@ export interface TransactionDetail {
     id: number
     debit: number
     credit: number
+    transaction_date: string
     account_id: number
     account_balance: number
     account_balance_type: string
@@ -38,6 +39,7 @@ export interface TransactionDetail {
 export interface Transaction {
     id: number
     description: string
+    transaction_date: string
     amount: number
     user_id: number
     transaction_type_id: number
