@@ -1,8 +1,8 @@
 "use client";
 import useSWR from "swr";
 import http from "@/lib/axios";
-import { AccountGroupsResponse, AccountsResponse } from "../interfaces/accountsDto";
-import { TransactionResponse } from "../interfaces/transactionsDto";
+import { AccountGroupsResponse, AccountsResponse } from "@/interfaces/accountsDto";
+import { TransactionResponse } from "@/interfaces/transactionsDto";
 
 export function useAccount(account_group_id = []) {
   const accountFetcher = (url: string, account_group_id?: number[]) => http.get(url, {

@@ -2,13 +2,13 @@
 import { IndianRupeeIcon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAccount } from "@/app/hooks/swr";
+import { useAccount } from "@/hooks/swr";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, PenBoxIcon } from "lucide-react";
 import ActionBar from "@/components/common/actionBar";
 import { AccountForm } from "@/components/common/accountForm";
 import { useState } from "react";
-import { Account } from "@/app/interfaces/accountsDto";
+import { Account } from "@/interfaces/accountsDto";
 
 export default function Accounts() {
   let { accounts, isLoading, isError } = useAccount();

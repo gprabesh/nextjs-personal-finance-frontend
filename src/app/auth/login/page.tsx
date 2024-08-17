@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import http from "@/lib/axios";
 import { AxiosError, AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
-import { LoginResponse } from "@/app/interfaces/authDto";
+import { LoginResponse } from "@/interfaces/authDto";
 
 const LoginSchema = z.object({
   usernameOrEmail: z.string().min(3),

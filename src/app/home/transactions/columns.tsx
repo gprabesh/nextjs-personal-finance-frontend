@@ -1,6 +1,6 @@
 "use client"
 
-import { TransactionDetail } from "@/app/interfaces/transactionsDto"
+import { TransactionDetail } from "@/interfaces/transactionsDto"
 import { ColumnDef } from "@tanstack/react-table"
 
 export const columns: ColumnDef<TransactionDetail>[] = [

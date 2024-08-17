@@ -2,7 +2,7 @@
 import { IndianRupeeIcon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAccount, useTransactions } from "@/app/hooks/swr";
+import { useAccount, useTransactions } from "@/hooks/swr";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   DropdownMenu,

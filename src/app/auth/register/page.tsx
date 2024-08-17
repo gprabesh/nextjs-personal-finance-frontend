@@ -17,7 +17,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import http from "@/lib/axios";
 import { AxiosError, AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
-import { LoginResponse } from "@/app/interfaces/authDto";
+import { LoginResponse } from "@/interfaces/authDto";
 
 const RegisterSchema = z
   .object({

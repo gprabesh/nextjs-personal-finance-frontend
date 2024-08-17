@@ -1,5 +1,5 @@
-import { useAccountGroups } from "@/app/hooks/swr";
-import { Account } from "@/app/interfaces/accountsDto";
+import { useAccountGroups } from "@/hooks/swr";
+import { Account } from "@/interfaces/accountsDto";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

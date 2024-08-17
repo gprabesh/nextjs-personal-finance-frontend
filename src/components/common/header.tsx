@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { User } from "@/app/interfaces/authDto";
+import { User } from "@/interfaces/authDto";
 import { useEffect, useState } from "react";
 import http from "@/lib/axios";
 import { useRouter } from "next/navigation";

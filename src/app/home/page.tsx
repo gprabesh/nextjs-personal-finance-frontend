@@ -22,8 +22,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useTransactions } from "../hooks/swr";
-import { TransactionDetail } from "../interfaces/transactionsDto";
+import { useTransactions } from "@/hooks/swr";
+import { TransactionDetail } from "@/interfaces/transactionsDto";
 
 export default function Dashboard() {
 
