@@ -1,3 +1,5 @@
+"use client"
+
 export default function ActionBar({
   children, // will be a page or nested layout
 }: {

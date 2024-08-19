@@ -1,8 +1,6 @@
 "use client";
-import { IndianRupeeIcon } from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAccount, useTransactions } from "@/hooks/swr";
+import { useAccount, useTransactions, useTransactionTypes } from "@/hooks/swr";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   DropdownMenu,
@@ -13,14 +11,37 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
-import { PlusCircle, ListFilter, File } from "lucide-react";
+import { PlusCircle, ListFilter } from "lucide-react";
 import ActionBar from "@/components/common/actionBar";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
+import { useEffect, useState } from "react";
+import { Transaction, TransactionType } from "@/interfaces/transactionsDto";
+import TransactionForm from "@/components/common/transactionForm";
+import { Account } from "@/interfaces/accountsDto";
+import { User } from "@/interfaces/authDto";
 
 export default function Accounts() {
   const { accounts, isLoading, isError } = useAccount();
   const transactions = useTransactions();
+  const transactionTypes = useTransactionTypes();
+  let [transactionType, setTransactionType] = useState<TransactionType>();
+  let [editTransaction, setEditTransaction] = useState<Transaction>();
+  let [dialogOpen, setDialogOpen] = useState(false);
+  let [user, setUser] = useState<User>();
+
+  const handleTransactionFormEvent = (isSuccess: boolean) => {
+    if (isSuccess) {
+      setTransactionType(undefined);
+      setEditTransaction(undefined);
+      setDialogOpen(false);
+    }
+  }
+  const setTransaction = (transaction?: Transaction, transactionType?: TransactionType) => {
+    setTransactionType(transactionType);
+    setEditTransaction(transaction);
+    setDialogOpen(true);
+  }
   return (
     <>
       <ActionBar>
@@ -51,23 +72,27 @@ export default function Accounts() {
               <DropdownMenuCheckboxItem>Archived</DropdownMenuCheckboxItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button size="sm" variant="outline" className="h-7 gap-1">
-            <File className="h-3.5 w-3.5" />
-            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-              Export
-            </span>
-          </Button>
-          <Button size="sm" className="h-7 gap-1">
-            <PlusCircle className="h-3.5 w-3.5" />
-            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-              Add Product
-            </span>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" className="h-7 gap-1">
+                <PlusCircle className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  New
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {transactionTypes.transactionTypes?.map((element) => <DropdownMenuCheckboxItem key={"transaction-type-dropdown" + element.id} onClick={() => setTransaction(undefined, element)}>
+                {element.name}
+              </DropdownMenuCheckboxItem>)}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </ActionBar>
       <div className="container mx-auto py-10">
         {!transactions.isLoading && <DataTable columns={columns} data={transactions.transactionDetails?.data || []}></DataTable>}
       </div >
+      {dialogOpen && <TransactionForm transaction_type={transactionType} transaction={editTransaction} onEmit={handleTransactionFormEvent}></TransactionForm>}
     </>
   );
 }

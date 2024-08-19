@@ -78,3 +78,26 @@ export interface Link {
     label: string
     active: boolean
 }
+
+export interface TransactionTypeResponse {
+    transactionTypes: TransactionType[]
+    message: string
+}
+
+export interface TransactionForm {
+    description: string
+    transaction_date: string
+    amount: number
+    transaction_type_id: number
+    location_id: number | null
+    parent_id: number | null
+    transactionDetails: TransactionDetail[]
+    people: number[]
+}
+
+export interface TransactionFormDetail {
+    id?: number
+    account_id: number
+    debit: number
+    credit: number
+}

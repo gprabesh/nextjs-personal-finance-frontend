@@ -2,7 +2,7 @@
 import useSWR from "swr";
 import http from "@/lib/axios";
 import { AccountGroupsResponse, AccountsResponse } from "@/interfaces/accountsDto";
-import { TransactionResponse } from "@/interfaces/transactionsDto";
+import { TransactionResponse, TransactionTypeResponse } from "@/interfaces/transactionsDto";
 
 export function useAccount(account_group_id = []) {
   const accountFetcher = (url: string, account_group_id?: number[]) => http.get(url, {
@@ -49,6 +49,19 @@ export function useTransactions(account_id?: number) {
   );
   return {
     transactionDetails: data?.transactionDetails,
+    isLoading,
+    isError: error,
+  };
+}
+export function useTransactionTypes() {
+  const transactionTypeFetcher = (url: string) => http.get(url).then((res) => res.data);
+
+  const { data, error, isLoading } = useSWR<TransactionTypeResponse>(
+    "/api/common/transaction-types",
+    transactionTypeFetcher
+  );
+  return {
+    transactionTypes: data?.transactionTypes,
     isLoading,
     isError: error,
   };

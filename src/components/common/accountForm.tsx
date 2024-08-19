@@ -1,3 +1,5 @@
+"use client"
+
 import { useAccountGroups } from "@/hooks/swr";
 import { Account } from "@/interfaces/accountsDto";
 import { Button } from "@/components/ui/button";
@@ -14,7 +16,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import http from "@/lib/axios";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DialogClose } from "@radix-ui/react-dialog";
 import { AxiosResponse } from "axios";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
