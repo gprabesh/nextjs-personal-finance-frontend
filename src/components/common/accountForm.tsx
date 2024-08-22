@@ -1,16 +1,14 @@
 "use client"
 
 import { useAccountGroups } from "@/hooks/swr";
-import { Account } from "@/interfaces/accountsDto";
+import { Account, AccountGroup } from "@/interfaces/accountsDto";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,11 +27,11 @@ type AccountSchemaType = z.infer<typeof AccountSchema>;
 
 export function AccountForm({
   account,
-  account_group_id,
+  accountGroup,
   onEmit
 }: {
   account?: Account;
-  account_group_id?: number;
+  accountGroup?: AccountGroup;
   onEmit: (isSuccess: boolean, shouldClose: boolean) => void;
 }) {
   let {
@@ -54,7 +52,7 @@ export function AccountForm({
           onEmit(true, true);
         });
     } else {
-      Object.assign(data, { account_group_id: account_group_id });
+      Object.assign(data, { account_group_id: accountGroup?.id });
       http.post("/api/accounts", data).then((response: AxiosResponse) => {
         console.log(response);
         onEmit(true, true);
