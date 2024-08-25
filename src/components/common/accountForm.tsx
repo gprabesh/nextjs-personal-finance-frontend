@@ -64,7 +64,7 @@ export function AccountForm({
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
-            <DialogTitle>Add Account</DialogTitle>
+            <DialogTitle>{account ? 'Edit' : 'Add'} {accountGroup?.name} Account</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
@@ -93,10 +93,10 @@ export function AccountForm({
                 id="opening_balance"
                 className="col-span-3"
                 type="number"
-                defaultValue={
+                defaultValue={account ? (
                   account?.current_balance_type == "CR"
                     ? 0 - account.current_balance
-                    : account?.current_balance
+                    : account?.current_balance) : 0
                 }
                 required
                 {...register("opening_balance", { valueAsNumber: true })}
