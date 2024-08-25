@@ -39,7 +39,8 @@ export function useAccountGroups() {
 export function useTransactions(account_id?: number) {
   const transactionsFetcher = (url: string, account_id?: number) => http.get(url, {
     params: {
-      account_id: account_id
+      account_id: account_id,
+      accountGroupIds: [3]
     }
   }).then((res) => res.data);
 

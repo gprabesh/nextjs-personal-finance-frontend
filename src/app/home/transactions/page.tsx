@@ -15,20 +15,16 @@ import { PlusCircle, ListFilter } from "lucide-react";
 import ActionBar from "@/components/common/actionBar";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Transaction, TransactionType } from "@/interfaces/transactionsDto";
 import TransactionForm from "@/components/common/transactionForm";
-import { Account } from "@/interfaces/accountsDto";
-import { User } from "@/interfaces/authDto";
 
 export default function Accounts() {
-  const { accounts, isLoading, isError } = useAccount();
   const transactions = useTransactions();
   const transactionTypes = useTransactionTypes();
   let [transactionType, setTransactionType] = useState<TransactionType>();
   let [editTransaction, setEditTransaction] = useState<Transaction>();
   let [dialogOpen, setDialogOpen] = useState(false);
-  let [user, setUser] = useState<User>();
 
   const handleTransactionFormEvent = (isSuccess: boolean) => {
     if (isSuccess) {
