@@ -26,12 +26,10 @@ export default function Accounts() {
   let [editTransaction, setEditTransaction] = useState<Transaction>();
   let [dialogOpen, setDialogOpen] = useState(false);
 
-  const handleTransactionFormEvent = (isSuccess: boolean) => {
-    if (isSuccess) {
-      setTransactionType(undefined);
-      setEditTransaction(undefined);
-      setDialogOpen(false);
-    }
+  const handleTransactionFormEvent = () => {
+    setTransactionType(undefined);
+    setEditTransaction(undefined);
+    setDialogOpen(false);
   }
   const setTransaction = (transaction?: Transaction, transactionType?: TransactionType) => {
     setTransactionType(transactionType);

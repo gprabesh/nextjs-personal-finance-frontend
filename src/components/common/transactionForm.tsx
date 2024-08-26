@@ -88,7 +88,7 @@ export default function TransactionForm({
         setTransactionObj(reponse.data.transaction);
       })
     }
-  }, [fetchedAccounts.accounts]);
+  }, [fetchedAccounts.accounts,transaction]);
 
   const onSubmit: SubmitHandler<TransactionSchemaType> = (data) => {
     if (transaction) {
