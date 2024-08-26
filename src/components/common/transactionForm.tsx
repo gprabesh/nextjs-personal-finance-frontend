@@ -1,6 +1,6 @@
 "use client"
 
-import { useAccount } from "@/hooks/swr";
+import { useAccount, useLocation, usePeople } from "@/hooks/swr";
 import { Account } from "@/interfaces/accountsDto";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +29,8 @@ const TransactionSchema = z.object({
   charge: z.number(),
   wallet_id: z.number(),
   account_id: z.number(),
+  location_id: z.number().nullable(),
+  people: z.array(z.string()).min(0)
 });
 
 type TransactionSchemaType = z.infer<typeof TransactionSchema>;
@@ -50,6 +52,8 @@ export default function TransactionForm({
   const fetchedAccounts = useAccount();
   let [normalAccounts, setNormalAccounts] = useState<Account[]>([]);
   let [assetAccounts, setAssetAccounts] = useState<Account[]>([]);
+  let peopleResponse = usePeople();
+  let locationResponse = useLocation();
   useEffect(() => {
     let sessionUser: User | undefined = JSON.parse(sessionStorage.getItem("currentUser") || '""');
     let tempAssetAccounts: Account[] = [];
@@ -154,6 +158,33 @@ export default function TransactionForm({
               {errors.account_id && (
                 <span className="text-red-500 text-sm">
                   {errors.account_id.message}
+                </span>
+              )}
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                Location
+              </Label>
+              <select id="location" {...register("location_id", { valueAsNumber: true })}>
+                <option value={undefined}>--Select Location--</option>
+                {locationResponse.locations?.map(element => <option key={"location" + element.id} value={element.id}>{element.name}</option>)}
+              </select>
+              {errors.location_id && (
+                <span className="text-blue-500 text-sm">
+                  {errors.location_id.message}
+                </span>
+              )}
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                People
+              </Label>
+              <select id="people" {...register("people")} multiple={true}>
+                {peopleResponse.people?.map(element => <option key={"people" + element.id} value={element.id}>{element.name}</option>)}
+              </select>
+              {errors.people && (
+                <span className="text-green-500 text-sm">
+                  {errors.people.message}
                 </span>
               )}
             </div>
