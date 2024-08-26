@@ -101,3 +101,21 @@ export interface TransactionFormDetail {
     debit: number
     credit: number
 }
+
+export interface TransactionEditResponse {
+    transaction: TransactionObject
+    message: string
+}
+
+export interface TransactionObject {
+    description: string
+    transaction_date: string
+    location_id: number | null
+    people: string[]
+    transaction_type_id?: number
+    account_id: number
+    wallet_id: number
+    amount: number
+    charge: number
+}
+
