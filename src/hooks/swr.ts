@@ -3,6 +3,8 @@ import useSWR from "swr";
 import http from "@/lib/axios";
 import { AccountGroupsResponse, AccountsResponse } from "@/interfaces/accountsDto";
 import { TransactionResponse, TransactionTypeResponse } from "@/interfaces/transactionsDto";
+import { PeopleResponse } from "@/interfaces/peopleDto";
+import { LocationResponse } from "@/interfaces/locationDto";
 
 export function useAccount(account_group_id = []) {
   const accountFetcher = (url: string, account_group_id?: number[]) => http.get(url, {
@@ -63,6 +65,32 @@ export function useTransactionTypes() {
   );
   return {
     transactionTypes: data?.transactionTypes,
+    isLoading,
+    isError: error,
+  };
+}
+export function usePeople() {
+  const peopleFetcher = (url: string) => http.get(url).then((res) => res.data);
+
+  const { data, error, isLoading } = useSWR<PeopleResponse>(
+    "/api/people",
+    peopleFetcher
+  );
+  return {
+    people: data?.people,
+    isLoading,
+    isError: error,
+  };
+}
+export function useLocation() {
+  const locationFetcher = (url: string) => http.get(url).then((res) => res.data);
+
+  const { data, error, isLoading } = useSWR<LocationResponse>(
+    "/api/locations",
+    locationFetcher
+  );
+  return {
+    locations: data?.locations,
     isLoading,
     isError: error,
   };
