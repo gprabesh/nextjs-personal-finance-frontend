@@ -13,11 +13,10 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
 import { PlusCircle, ListFilter } from "lucide-react";
 import ActionBar from "@/components/common/actionBar";
-import { DataTable } from "./data-table";
-import { columns } from "./columns";
 import { useState } from "react";
 import { Transaction, TransactionType } from "@/interfaces/transactionsDto";
 import TransactionForm from "@/components/common/transactionForm";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export default function Accounts() {
   const transactions = useTransactions();
@@ -84,7 +83,29 @@ export default function Accounts() {
         </div>
       </ActionBar>
       <div className="container mx-auto py-10">
-        {!transactions.isLoading && <DataTable columns={columns} data={transactions.transactionDetails?.data || []}></DataTable>}
+        <Table>
+          <TableCaption>A list of your recent transactions.</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Description</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Wallet</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead className="text-right">Amount</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {transactions.transactionDetails?.data.map((transactionDetail) => (
+              <TableRow key={transactionDetail.id} onClick={() => setTransaction(transactionDetail.transaction, transactionDetail.transaction.transaction_type)}>
+                <TableCell >{transactionDetail.transaction.description}</TableCell>
+                <TableCell>{transactionDetail.transaction_date}</TableCell>
+                <TableCell>{transactionDetail.account?.name}</TableCell>
+                <TableCell>{transactionDetail.transaction.transaction_type.name}</TableCell>
+                <TableCell className="text-right">{transactionDetail.transaction.amount}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div >
       {dialogOpen && <TransactionForm transaction_type={transactionType} transaction={editTransaction} onEmit={handleTransactionFormEvent}></TransactionForm>}
     </>

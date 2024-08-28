@@ -47,6 +47,8 @@ export default function TransactionForm({
   let {
     handleSubmit,
     register,
+    setValue,
+    reset,
     formState: { errors },
   } = useForm<TransactionSchemaType>({ resolver: zodResolver(TransactionSchema) });
   const fetchedAccounts = useAccount();
@@ -84,11 +86,14 @@ export default function TransactionForm({
     setNormalAccounts(tempNormalAccounts);
     setAssetAccounts(tempAssetAccounts);
     if (transaction) {
-      http.get<TransactionEditResponse>("/api/transactions/" + transaction.id + "/edit").then((reponse) => {
-        setTransactionObj(reponse.data.transaction);
+      http.get<TransactionEditResponse>("/api/transactions/" + transaction.id + "/edit").then((response) => {
+        setTransactionObj(response.data.transaction);
+        Object.keys(response.data.transaction).forEach((key) => {
+          setValue(key as keyof TransactionSchemaType, response.data.transaction[key as keyof TransactionSchemaType])
+        })
       })
     }
-  }, [fetchedAccounts.accounts,transaction]);
+  }, [fetchedAccounts.accounts, transaction,setValue]);
 
   const onSubmit: SubmitHandler<TransactionSchemaType> = (data) => {
     if (transaction) {
