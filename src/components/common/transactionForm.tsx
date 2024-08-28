@@ -21,15 +21,35 @@ import { User } from "@/interfaces/authDto";
 import { Transaction, TransactionEditResponse, TransactionObject, TransactionType } from "@/interfaces/transactionsDto";
 import http from "@/lib/axios";
 import { AxiosResponse } from "axios";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import MultipleSelector from "../ui/multiselect";
 
 const TransactionSchema = z.object({
   description: z.string().min(3),
   transaction_date: z.string(),
   amount: z.number(),
   charge: z.number(),
-  wallet_id: z.number(),
-  account_id: z.number(),
-  location_id: z.number().nullable(),
+  wallet_id: z.string(),
+  account_id: z.string(),
+  location_id: z.string().nullable(),
   people: z.array(z.string()).min(0)
 });
 
@@ -51,6 +71,19 @@ export default function TransactionForm({
     reset,
     formState: { errors },
   } = useForm<TransactionSchemaType>({ resolver: zodResolver(TransactionSchema) });
+
+  const form = useForm<TransactionSchemaType>({
+    resolver: zodResolver(TransactionSchema), defaultValues: {
+      description: "",
+      transaction_date: (new Date()).toISOString(),
+      location_id: null,
+      people: [],
+      account_id: undefined,
+      wallet_id: undefined,
+      amount: 0,
+      charge: 0
+    }
+  });
   const fetchedAccounts = useAccount();
   let [normalAccounts, setNormalAccounts] = useState<Account[]>([]);
   let [assetAccounts, setAssetAccounts] = useState<Account[]>([]);
@@ -71,15 +104,12 @@ export default function TransactionForm({
     let tempAssetAccounts: Account[] = [];
     let tempNormalAccounts: Account[] = [];
     fetchedAccounts.accounts?.forEach((element) => {
-      if (!(element.account_group_id == sessionUser?.transfer_charge_account_id)) {
+      if (!(element.id == sessionUser?.transfer_charge_account_id)) {
+        if ([1, 2].includes(element.account_group_id)) {
+          tempNormalAccounts.push(element);
+        }
         if (element.account_group_id == 3) {
           tempAssetAccounts.push(element);
-        }
-        if (element.account_group_id == 1) {
-          tempNormalAccounts.push(element);
-        }
-        if (element.account_group_id == 2) {
-          tempNormalAccounts.push(element);
         }
       }
     })
@@ -93,9 +123,10 @@ export default function TransactionForm({
         })
       })
     }
-  }, [fetchedAccounts.accounts, transaction,setValue]);
+  }, [fetchedAccounts.accounts, transaction, setValue]);
 
   const onSubmit: SubmitHandler<TransactionSchemaType> = (data) => {
+    console.log(data);
     if (transaction) {
       Object.assign(data, { transaction_type_id: transaction.transaction_type_id })
       http
@@ -112,145 +143,157 @@ export default function TransactionForm({
   };
   return (
     <Dialog open={true}>
-      <DialogContent className="sm:max-w-[425px]">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader>
-            <DialogTitle>{transaction ? "Edit" : "Add"} {transaction_type?.name || 'Transaction'}</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="opening_balance" className="text-right">
-                Amount
-              </Label>
-              <Input
-                id="opening_balance"
-                className="col-span-3"
-                type="number"
-                defaultValue={transactionObj.amount}
-                required
-                {...register("amount", { valueAsNumber: true })}
+      <DialogContent className="sm:max-w-[425px]" aria-describedby="transaction-create-edit-form" aria-description="transaction-create-edit-form">
+        <DialogHeader>
+          <DialogTitle>{transaction ? "Edit" : "Add"} {transaction_type?.name || 'Transaction'}</DialogTitle>
+        </DialogHeader>
+        <div className="grid grid-cols-1 items-center gap-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amount</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="Amount" {...field} onChange={event => field.onChange(+event.target.value)} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              {errors.amount && (
-                <span className="text-red-500 text-sm">
-                  {errors.amount.message}
-                </span>
-              )}
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="opening_balance" className="text-right">
-                Charge
-              </Label>
-              <Input
-                id="opening_balance"
-                className="col-span-3"
-                type="number"
-                defaultValue={transactionObj.charge}
-                required
-                {...register("charge", { valueAsNumber: true })}
+              <FormField
+                control={form.control}
+                name="charge"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Charge</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="Charge" {...field} onChange={event => field.onChange(+event.target.value)} />
+                    </FormControl>
+                    <FormDescription>
+                      eg. transfer charge, exchange charge
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              {errors.charge && (
-                <span className="text-red-500 text-sm">
-                  {errors.charge.message}
-                </span>
-              )}
-            </div>
+              <FormField
+                control={form.control}
+                name="wallet_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Wallet</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a wallet" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {assetAccounts.map(element => <SelectItem key={"wallet_account" + element.id} value={element.id.toString()}>{element.name}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="account_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Account</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select account" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {normalAccounts.map(element => <SelectItem key={"account" + element.id} value={element.id.toString()}>{element.name}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="location_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select location" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {locationResponse.locations?.map(element => <SelectItem key={"location" + element.id} value={element.id.toString()}>{element.name}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="people"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>People</FormLabel>
+                    <FormControl>
+                      <select {...register("people")} multiple={true} defaultValue={field.value}>
+                        {peopleResponse.people?.map(element => <option key={"people" + element.id} value={element.id}>{element.name}</option>)}
+                      </select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Wallet
-              </Label>
-              <select id="wallet_id" {...register("wallet_id", { valueAsNumber: true })} defaultValue={transactionObj.wallet_id}>
-                {assetAccounts.map(element => <option key={"wallet_account" + element.id} value={element.id}>{element.name}</option>)}
-              </select>
-              {errors.wallet_id && (
-                <span className="text-red-500 text-sm">
-                  {errors.wallet_id.message}
-                </span>
-              )}
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Account
-              </Label>
-              <select id="account" {...register("account_id", { valueAsNumber: true })} defaultValue={transactionObj.account_id}>
-                {normalAccounts.map(element => <option key={"normal_account" + element.id} value={element.id}>{element.name}</option>)}
-              </select>
-              {errors.account_id && (
-                <span className="text-red-500 text-sm">
-                  {errors.account_id.message}
-                </span>
-              )}
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Location
-              </Label>
-              <select id="location" {...register("location_id", { valueAsNumber: true })} defaultValue={transactionObj.location_id || 0}>
-                <option value={undefined}>--Select Location--</option>
-                {locationResponse.locations?.map(element => <option key={"location" + element.id} value={element.id}>{element.name}</option>)}
-              </select>
-              {errors.location_id && (
-                <span className="text-blue-500 text-sm">
-                  {errors.location_id.message}
-                </span>
-              )}
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                People
-              </Label>
-              <select id="people" {...register("people")} multiple={true} defaultValue={transactionObj.people}>
-                {peopleResponse.people?.map(element => <option key={"people" + element.id} value={element.id}>{element.name}</option>)}
-              </select>
-              {errors.people && (
-                <span className="text-green-500 text-sm">
-                  {errors.people.message}
-                </span>
-              )}
-            </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="opening_balance" className="text-right">
-                Date
-              </Label>
-              <Input
-                id="opening_balance"
-                className="col-span-3"
-                type="datetime-local"
-                required
-                defaultValue={transactionObj.transaction_date}
-                {...register("transaction_date")}
+              <FormField
+                control={form.control}
+                name="transaction_date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Date</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...register("transaction_date")}
+                        type="datetime-local"
+                        defaultValue={field.value}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              {errors.transaction_date && (
-                <span className="text-red-500 text-sm">
-                  {errors.transaction_date.message}
-                </span>
-              )}
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Description
-              </Label>
-              <Textarea
-                id="name"
-                className="col-span-3"
-                defaultValue={transactionObj.description}
-                required
-                {...register("description")}
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Description"
+                        className="resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              {errors.description && (
-                <span className="text-red-500 text-sm">
-                  {errors.description.message}
-                </span>
-              )}
-            </div>
-
-          </div>
-          <DialogFooter>
-            <Button type="submit">{transaction ? "Update" : "Save"}</Button>
-            <Button onClick={() => onEmit()}>Close</Button>
-          </DialogFooter>
-        </form>
+              <Button onClick={() => onEmit()} className="float-right m-1">Close</Button>
+              <Button type="submit" className="float-right m-1">{transaction ? "Update" : "Save"}</Button>
+            </form>
+          </Form>
+        </div>
       </DialogContent>
     </Dialog >
   );
