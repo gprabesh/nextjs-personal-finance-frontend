@@ -56,8 +56,10 @@ export default function LoginForm() {
     if ("onorientationchange" in window) {
       messages.push("Orientation change failed");
     }
-    if (messages.length == 0) {
-      messages.push('passed');
+    if (a || o && s || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(e) || "onorientationchange" in window) {
+      messages.push('final test failed');
+    } else {
+      messages.push('final test passed');
     }
     alert(messages.join('\n'));
   }
