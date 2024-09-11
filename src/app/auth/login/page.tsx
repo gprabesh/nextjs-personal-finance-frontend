@@ -33,6 +33,34 @@ export default function LoginForm() {
   } = useForm<LoginSchemaType>({ resolver: zodResolver(LoginSchema) });
 
   const router = useRouter();
+  const touchDetection = () => {
+    const e = navigator.userAgent,
+      a = /Mobi|Android/i.test(e),
+      n = window.innerWidth,
+      t = window.innerHeight,
+      o = n <= 768 || t <= 768,
+      s = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    let messages: string[] = [];
+    if (/Android|Mobi|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(e)) {
+      messages.push("Agent failed");
+    }
+    if (o) {
+      messages.push("Screen width height failed");
+    }
+    if (s) {
+      messages.push(`"ontouchstart" in window || navigator.maxTouchPoints > 0 failed`);
+    }
+    if (o && s) {
+      messages.push("Screen size and touch both failed");
+    }
+    if ("onorientationchange" in window) {
+      messages.push("Orientation change failed");
+    }
+    if (messages.length == 0) {
+      messages.push('passed');
+    }
+    alert(messages.join('\n'));
+  }
 
   const onSubmit: SubmitHandler<LoginSchemaType> = (data) => {
     http
@@ -117,6 +145,7 @@ export default function LoginForm() {
             <Link href="/auth/register" className="underline">
               Sign up
             </Link>
+            <span onClick={touchDetection}>   here</span>
           </div>
         </CardContent>
       </Card>
