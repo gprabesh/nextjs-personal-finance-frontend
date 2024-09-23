@@ -11,3 +11,12 @@ export interface People {
     updated_at: string
     status: number
 }
+export interface PeopleSelectResponse {
+    people: SelectPeople[]
+    message: string
+}
+
+export interface SelectPeople {
+    value: string
+    label: string
+}

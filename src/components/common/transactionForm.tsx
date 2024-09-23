@@ -1,6 +1,6 @@
 "use client"
 
-import { useAccount, useLocation, usePeople } from "@/hooks/swr";
+import { useAccount, useLocation, usePeople, usePeopleSelect } from "@/hooks/swr";
 import { Account } from "@/interfaces/accountsDto";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { MultiSelect } from "@/components/ui/multi-select";
 
 import {
   Form,
@@ -40,8 +41,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import MultipleSelector from "../ui/multiselect";
-
 const TransactionSchema = z.object({
   description: z.string().min(3),
   transaction_date: z.string(),
@@ -84,6 +83,8 @@ export default function TransactionForm({
       charge: 0
     }
   });
+  const [people, setPeople] = useState<string[]>([]);
+
   const fetchedAccounts = useAccount();
   let [normalAccounts, setNormalAccounts] = useState<Account[]>([]);
   let [assetAccounts, setAssetAccounts] = useState<Account[]>([]);
@@ -98,6 +99,7 @@ export default function TransactionForm({
     charge: 0
   })
   let peopleResponse = usePeople();
+  let peopleSelectResponse = usePeopleSelect();
   let locationResponse = useLocation();
   useEffect(() => {
     let sessionUser: User | undefined = JSON.parse(sessionStorage.getItem("currentUser") || '""');
@@ -143,42 +145,42 @@ export default function TransactionForm({
   };
   return (
     <Dialog open={true}>
-      <DialogContent className="sm:max-w-[425px]" aria-describedby="transaction-create-edit-form" aria-description="transaction-create-edit-form">
+      <DialogContent className="sm:max-w-[425px]" aria-describedby="transaction-create-edit-form">
         <DialogHeader>
           <DialogTitle>{transaction ? "Edit" : "Add"} {transaction_type?.name || 'Transaction'}</DialogTitle>
         </DialogHeader>
         <div className="grid grid-cols-1 items-center gap-4">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="amount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Amount</FormLabel>
-                    <FormControl>
-                      <Input type="number" placeholder="Amount" {...field} onChange={event => field.onChange(+event.target.value)} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="charge"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Charge</FormLabel>
-                    <FormControl>
-                      <Input type="number" placeholder="Charge" {...field} onChange={event => field.onChange(+event.target.value)} />
-                    </FormControl>
-                    <FormDescription>
-                      eg. transfer charge, exchange charge
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+              <div className="grid grid-cols-2 gap-1">
+                <FormField
+                  control={form.control}
+                  name="amount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Amount</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="Amount" inputMode="numeric" {...field} onChange={event => field.onChange(+event.target.value)} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="charge"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Charge</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="Charge" inputMode="numeric" {...field} onChange={event => field.onChange(+event.target.value)} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <FormField
                 control={form.control}
                 name="wallet_id"
@@ -245,10 +247,16 @@ export default function TransactionForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>People</FormLabel>
+                    <Input type="hidden" {...field} value={people}></Input>
                     <FormControl>
-                      <select {...register("people")} multiple={true} defaultValue={field.value}>
-                        {peopleResponse.people?.map(element => <option key={"people" + element.id} value={element.id}>{element.name}</option>)}
-                      </select>
+                      <MultiSelect
+                        options={peopleSelectResponse?.people || []}
+                        onValueChange={setPeople}
+                        defaultValue={people}
+                        placeholder="Select People"
+                        variant="inverted"
+                        maxCount={1}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

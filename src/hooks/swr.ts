@@ -3,7 +3,7 @@ import useSWR from "swr";
 import http from "@/lib/axios";
 import { AccountGroupsResponse, AccountsResponse } from "@/interfaces/accountsDto";
 import { TransactionResponse, TransactionTypeResponse } from "@/interfaces/transactionsDto";
-import { PeopleResponse } from "@/interfaces/peopleDto";
+import { PeopleResponse, PeopleSelectResponse } from "@/interfaces/peopleDto";
 import { LocationResponse } from "@/interfaces/locationDto";
 
 export function useAccount(account_group_id = []) {
@@ -74,6 +74,19 @@ export function usePeople() {
 
   const { data, error, isLoading } = useSWR<PeopleResponse>(
     "/api/people",
+    peopleFetcher
+  );
+  return {
+    people: data?.people,
+    isLoading,
+    isError: error,
+  };
+}
+export function usePeopleSelect() {
+  const peopleFetcher = (url: string) => http.get(url).then((res) => res.data);
+
+  const { data, error, isLoading } = useSWR<PeopleSelectResponse>(
+    "/api/people-select-list",
     peopleFetcher
   );
   return {
